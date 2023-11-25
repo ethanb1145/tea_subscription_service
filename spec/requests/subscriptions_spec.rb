@@ -31,7 +31,6 @@ RSpec.describe "Subscriptions API", type: :request do
         subscription: {
           title: "Weekly Black Tea",
           price: 12.99,
-          status: "active",
           frequency: "weekly",
           tea_id: tea.id
         }
@@ -59,7 +58,6 @@ RSpec.describe "Subscriptions API", type: :request do
         subscription: {
           title: "",
           price: nil,
-          status: "active",
           frequency: "weekly",
           tea_id: nil
         }
