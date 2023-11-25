@@ -70,7 +70,7 @@ RSpec.describe "Subscriptions API", type: :request do
 
       expect(data).to_not have_key("data")
       expect(data).to have_key("errors")
-      expect(data["errors"]).to_not be_empty
+      expect(data["errors"]).to eq("Subscription not created.")
     end
   end
 
@@ -93,5 +93,19 @@ RSpec.describe "Subscriptions API", type: :request do
       expect(updated_subscription_data["attributes"]).to have_key("status")
       expect(updated_subscription_data["attributes"]["status"]).to eq("cancelled")
     end
+  end
+
+  it "returns error if subscription update fails" do
+    customer = create(:customer)
+    tea = create(:tea)
+    subscription = create(:subscription, customer: customer, tea: tea)
+
+    patch "/api/v1/customers/#{customer.id}/subscriptions/#{subscription.id}", params: { subscription: { status: "no" } }
+
+    expect(response).to have_http_status(:unprocessable_entity)
+    data = JSON.parse(response.body)
+
+    expect(data).to have_key("errors")
+    expect(data["errors"]).to eq("'no' is not a valid status. Use 'subscribed' or 'cancelled'.")
   end
 end

@@ -13,14 +13,18 @@ class Api::V1::SubscriptionsController < ApplicationController
     if subscription.save
       render json: SubscriptionSerializer.new(subscription), status: :created
     else
-      render json: { errors: ["Invalid."] }, status: :unprocessable_entity
+      render json: { errors: "Subscription not created." }, status: :unprocessable_entity
     end
   end
 
   def update
     subscription = Subscription.find(params[:id])
-    subscription.update(status: params[:subscription][:status])
-    render json: SubscriptionSerializer.new(subscription)
+    begin
+      subscription.update(status: params[:subscription][:status])
+      render json: SubscriptionSerializer.new(subscription)
+    rescue ArgumentError => e
+      render json: { errors: "#{e.message}. Use 'subscribed' or 'cancelled'." }, status: :unprocessable_entity
+    end
   end
 
   private 
